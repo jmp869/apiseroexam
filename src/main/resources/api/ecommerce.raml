@@ -1,0 +1,53 @@
+#%RAML 1.0
+title: Ecommerce
+baseUri: http://localhost:8082
+
+
+/customer:
+  /add:
+    post:
+      queryParameters:
+        custID:
+          required: true
+        name:
+          required: true
+        place:
+          required: true
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message":"customer information added"
+                }  
+  /retrieve:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {
+                  "message":"customer information retrieved"
+                } 
+
+  /update:   
+    /{id}:
+      put:
+       queryParameters:
+          custID:
+            required: true
+          name:
+            required: true
+          place:
+            required: true
+       responses:
+          200:
+            body:
+              application/json:
+                example:
+                 {
+                  "message":"Customer info updated"
+                  }     
+

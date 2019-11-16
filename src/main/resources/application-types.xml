@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="abc" format="json">
+      <types:shape format="weave" example="examples/exam.json"><![CDATA[%dw 2.0
+
+type abc = {|
+  id: Number {"typeId": "int"}, 
+  name: String, 
+  place: String
+|} {"example": "{\"id\":1,\"name\":\"john\",\"place\":\"pune\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+</types:mule>

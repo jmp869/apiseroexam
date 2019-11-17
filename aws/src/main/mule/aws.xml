@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sns="http://www.mulesoft.org/schema/mule/sns" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/sns http://www.mulesoft.org/schema/mule/sns/current/mule-sns.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="42e2e738-f9e0-4096-bc5a-cd71681f9a85" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="4442922a-29a8-4eb2-9c08-426447c2d15a" >
+		<s3:basic-connection accessKey="AKIAJWKZDPLHRO4WPP7A" secretKey="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" region="AP_SOUTH_1"/>
+	</s3:config>
+	<sns:config name="Amazon_SNS_configuration" doc:name="Amazon SNS configuration" doc:id="32739ee1-8610-40d1-a08c-03632b4b3e37" >
+		<sns:basic-connection accessKey="AKIAJWKZDPLHRO4WPP7A" secretKey="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" />
+	</sns:config>
+	<flow name="awsFlow" doc:id="e390e9fd-1f01-45ff-afc5-87a08b04f3e1" >
+		<http:listener doc:name="Listener" doc:id="23f7ec79-c65e-4679-9416-95233c6552c0" config-ref="HTTP_Listener_config" path="/aws"/>
+		<logger level="INFO" doc:name="Logger" doc:id="07db22ae-05c5-4306-b832-81bfda1c6f86" />
+		<s3:create-object doc:name="Create object" doc:id="710672cc-c1c0-4b19-b3d1-468c21ccb85a" config-ref="Amazon_S3_Configuration" bucketName="johntest11" key="#['johnfile' ++ ( now() as String {format:'yyyy-MM-dd-hh-mm-ss'} ) ++ '.txt']"/>
+	</flow>
+	<flow name="awsFlow1" doc:id="d366e813-ba1c-4f5f-a0a2-9cd1028890c8" >
+		<s3:new-object-trigger doc:name="On New Object" doc:id="96d6be22-6647-4574-a29c-7ba29750f4e5" config-ref="Amazon_S3_Configuration" bucketName="johntest11">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS" />
+			</scheduling-strategy>
+		</s3:new-object-trigger>
+		<s3:get-object doc:name="Get object" doc:id="b68fa98c-8108-402f-a944-d7dc7dacad52" config-ref="Amazon_S3_Configuration" bucketName="johntest11" key="#[payload.key]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="16e603c5-bb5b-4db8-a815-b9e47ae3c5a1" message="#[payload]"/>
+	</flow>
+</mule>
